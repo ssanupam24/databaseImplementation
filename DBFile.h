@@ -7,26 +7,30 @@
 #include "File.h"
 #include "Comparison.h"
 #include "ComparisonEngine.h"
+#include "GenericDBFile.h"
+#include "HeapFile.h"
+#include "SortedFile.h"
 
-typedef enum {heap, sorted, tree} fType;
-
-// stub DBFile header..replace it with your own DBFile.h 
 
 class DBFile {
+	private:
+		GenericDBFile* dbFile;
+		FILE* metaFile;	
+	public:
+		DBFile (); 
 
-public:
-	DBFile (); 
+		int Create (char *fpath, fType file_type, void *startup);
+		int Open (char *fpath);
+		int Close ();
 
-	int Create (char *fpath, fType file_type, void *startup);
-	int Open (char *fpath);
-	int Close ();
-
-	void Load (Schema &myschema, char *loadpath);
-
-	void MoveFirst ();
-	void Add (Record &addme);
-	int GetNext (Record &fetchme);
-	int GetNext (Record &fetchme, CNF &cnf, Record &literal);
+		void Load (Schema &myschema, char *loadpath);
+		
+		void MoveFirst ();
+		void Add (Record &addme);
+		int GetNext (Record &fetchme);
+		int GetNext (Record &fetchme, CNF &cnf, Record &literal);
+		void writeSortedOrdertoMetadata(SortInfo* sortInfo);
+		static char* getMetaDataFileName(char *fpath);
 
 };
 #endif

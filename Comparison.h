@@ -36,14 +36,16 @@ public:
 
 
 class Schema;
-
+class Record;
 // This structure encapsulates a sort order for records
 class OrderMaker {
 
 	friend class ComparisonEngine;
 	friend class CNF;
-
-	int numAtts;
+    friend class SortedFile;
+    friend void q6 (); 	
+    friend void* RunGroupBy(void *); 
+    int numAtts;
 
 	int whichAtts[MAX_ANDS];
 	Type whichTypes[MAX_ANDS];
@@ -56,7 +58,9 @@ public:
 	// create an OrderMaker that can be used to sort records
 	// based upon ALL of their attributes
 	OrderMaker(Schema *schema);
-
+	void growFromParseTree(NameList* gAtts, Schema* inputSchema);
+	const int* getAtts() const { return whichAtts; }
+    	int GetNumAtts();
 	// print to the screen
 	void Print ();
 };
@@ -97,6 +101,9 @@ public:
         // a relational selection over a single relation so only one schema is used
         void GrowFromParseTree (struct AndList *parseTree, Schema *mySchema, 
 		Record &literal);
+        //Function to initialise a SortOrder instance based on Query SortOrder passed and returns 1 if atleast one attribute
+        //matches and 0 if not.
+        int QueryMaker(OrderMaker& queryOrder, OrderMaker &sortOrder);
 
 };
 

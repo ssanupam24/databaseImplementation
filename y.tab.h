@@ -1,104 +1,46 @@
-/* A Bison parser, made by GNU Bison 2.7.12-4996.  */
-
-/* Bison interface for Yacc-like parsers in C
-   
-      Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
-   
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-   
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
-
-/* As a special exception, you may create a larger work that contains
-   part or all of the Bison parser skeleton and distribute that work
-   under terms of your choice, so long as that work isn't itself a
-   parser generator using the skeleton or a modified version thereof
-   as a parser skeleton.  Alternatively, if you modify or redistribute
-   the parser skeleton itself, you may (at your option) remove this
-   special exception, which will cause the skeleton and the resulting
-   Bison output files to be licensed under the GNU General Public
-   License without this special exception.
-   
-   This special exception was added by the Free Software Foundation in
-   version 2.2 of Bison.  */
-
-#ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
-/* Enabling traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 0
+#define Name 257
+#define Float 258
+#define Int 259
+#define String 260
+#define SELECT 261
+#define GROUP 262
+#define DISTINCT 263
+#define BY 264
+#define FROM 265
+#define WHERE 266
+#define SUM 267
+#define AS 268
+#define AND 269
+#define OR 270
+#define CREATE 271
+#define TABLE 272
+#define HEAP 273
+#define INSERT 274
+#define INTO 275
+#define SET 276
+#define OUTPUT 277
+#define DROP 278
+#define SORTED 279
+#define ON 280
+#ifdef YYSTYPE
+#undef  YYSTYPE_IS_DECLARED
+#define YYSTYPE_IS_DECLARED 1
 #endif
-#if YYDEBUG
-extern int yydebug;
-#endif
-
-/* Tokens.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     OR = 258,
-     AND = 259,
-     Name = 260,
-     String = 261,
-     Float = 262,
-     Int = 263
-   };
-#endif
-/* Tokens.  */
-#define OR 258
-#define AND 259
-#define Name 260
-#define String 261
-#define Float 262
-#define Int 263
-
-
-
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
-{
-/* Line 2053 of yacc.c  */
-#line 20 "Parser.y"
-
- 	struct Operand *myOperand;
-	struct ComparisonOp *myComparison; 
-  	struct OrList *myOrList;
-  	struct AndList *myAndList;
+#ifndef YYSTYPE_IS_DECLARED
+#define YYSTYPE_IS_DECLARED 1
+typedef union {
+ 	struct FuncOperand *myOperand;
+	struct FuncOperator *myOperator; 
+	struct TableList *myTables;
+	struct ComparisonOp *myComparison;
+	struct Operand *myBoolOperand;
+	struct OrList *myOrList;
+	struct AndList *myAndList;
+	struct NameList *myNames;
+	struct AttrList *myAttrList;
+	struct NameList *mysortattrs;
 	char *actualChars;
-
-
-/* Line 2053 of yacc.c  */
-#line 82 "y.tab.h"
+	char whichOne;
 } YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
-#endif
-
+#endif /* !YYSTYPE_IS_DECLARED */
 extern YYSTYPE yylval;
-
-#ifdef YYPARSE_PARAM
-#if defined __STDC__ || defined __cplusplus
-int yyparse (void *YYPARSE_PARAM);
-#else
-int yyparse ();
-#endif
-#else /* ! YYPARSE_PARAM */
-#if defined __STDC__ || defined __cplusplus
-int yyparse (void);
-#else
-int yyparse ();
-#endif
-#endif /* ! YYPARSE_PARAM */
-
-#endif /* !YY_YY_Y_TAB_H_INCLUDED  */

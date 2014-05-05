@@ -36,7 +36,50 @@ Attribute *Schema :: GetAtts () {
 	return myAtts;
 }
 
-Schema :: Schema (char *fName, char *relName) {
+Schema::Schema (const Schema& sch):
+  numAtts(sch.numAtts), myAtts(new Attribute[sch.numAtts]), fileName(strdup(sch.fileName)) {
+  for (int i=0; i < numAtts; ++i) {
+    myAtts[i].name = strdup(sch.myAtts[i].name);
+    myAtts[i].myType = sch.myAtts[i].myType;
+  }
+}
+
+Schema :: Schema (char *fpath, int num_atts, Attribute *atts) {
+	fileName = strdup (fpath);
+	numAtts = num_atts;
+	myAtts = new Attribute[numAtts];
+	for (int i = 0; i < numAtts; i++ ) {
+		if (atts[i].myType == Int) {
+			myAtts[i].myType = Int;
+		}
+		else if (atts[i].myType == Double) {
+			myAtts[i].myType = Double;
+		}
+		else if (atts[i].myType == String) {
+			myAtts[i].myType = String;
+		} 
+		else {
+			cout << "Bad attribute type for " << atts[i].myType << "\n";
+			delete [] myAtts;
+			exit (1);
+		}
+		myAtts[i].name = strdup (atts[i].name);
+	}
+}
+
+Schema::Schema(const Schema& left, const Schema& right):
+  numAtts(left.numAtts+right.numAtts), myAtts(new Attribute[numAtts]), fileName(NULL) {
+  for (size_t i = 0; i < left.numAtts; ++i) {
+    myAtts[i].name = strdup(left.myAtts[i].name);
+    myAtts[i].myType = left.myAtts[i].myType;
+  }
+  for (size_t j = 0; j < right.numAtts; ++j) {
+    myAtts[left.numAtts+j].name = strdup(right.myAtts[j].name);
+    myAtts[left.numAtts+j].myType = right.myAtts[j].myType;
+  }
+}
+
+Schema :: Schema (char *fName, char *relName, const char* alias) {
 
 	FILE *foo = fopen (fName, "r");
 	
@@ -111,7 +154,9 @@ Schema :: Schema (char *fName, char *relName) {
 	for (int i = 0; i < numAtts; i++ ) {
 
 		// read in the attribute name
-		fscanf (foo, "%s", space);	
+                strcpy (space, alias);
+                strcat (space, ".");
+                fscanf (foo, "%s", space+strlen(space));
 		myAtts[i].name = strdup (space);
 
 		// read in the attribute type
@@ -131,8 +176,15 @@ Schema :: Schema (char *fName, char *relName) {
 	fclose (foo);
 }
 
+void Schema::print(ostream& os) const {
+  const char* typenames[3] = {"int", "double", "string"};
+  for (size_t i = 0; i < numAtts; ++i)
+    os << "  Att" << i << ": " << myAtts[i].name << " " << typenames[myAtts[i].myType] << endl;
+}
+
 Schema :: ~Schema () {
 	delete [] myAtts;
 	myAtts = 0;
 }
+
 

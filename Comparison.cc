@@ -2,7 +2,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
-
+#include "Errors.h"
 #include "Comparison.h"
 
 
@@ -102,6 +102,18 @@ OrderMaker :: OrderMaker(Schema *schema) {
         }
 }
 
+int OrderMaker:: GetNumAtts()
+{
+    return numAtts;
+}
+
+void OrderMaker::growFromParseTree(NameList* grpAtts, Schema* inputSchema) {
+  for(; grpAtts; grpAtts = grpAtts->next, numAtts++) {
+    FATALIF ((whichAtts[numAtts] = inputSchema->Find(grpAtts->name))==-1,
+             "Grouping by non-existing attribute.");
+    whichTypes[numAtts] = inputSchema->FindType(grpAtts->name);
+  }
+}
 
 void OrderMaker :: Print () {
 	printf("NumAtts = %5d\n", numAtts);
@@ -614,5 +626,59 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *mySchema,
 	remove("sdafdsfFFDSDA");
 	remove("hkljdfgkSDFSDF");
 }
-
-
+/**
+ *
+ *
+ */
+int CNF:: QueryMaker(OrderMaker& queryOrder, OrderMaker& sortOrder)
+{
+    int queryNum = 0;
+    bool attribFound = false;
+    //iterate through all the attributes in sortorder till one is found which is not present in CNF.
+    for(int i=0;i < sortOrder.numAtts;i++)
+    {
+        //check for each of attribute of sortOrder check if the attribute is present in CNF else break the loop.
+        int attrib = sortOrder.whichAtts[i];
+        //check if this attribute is in CNF
+        for(int j =0;j<numAnds ;j++)
+        {
+            attribFound = false;
+            //check if subexpression in CNF
+            for(int k=0; k<orLens[j]; k++)
+            {
+                if((orList[j][k].whichAtt1 == attrib && orList[j][k].operand2 == Literal) || (orList[j][k].whichAtt2 == attrib && orList[j][k].operand1 == Literal))
+                {
+                    attribFound = true;
+                    //if sort order attribute is present in subexpression
+                    if(k == 0 && orList[i][0].op == Equals)
+                    {
+                        //if number of attributes is one and operator is equals add the 
+                        queryOrder.whichAtts[queryNum] = sortOrder.whichAtts[i];
+                        queryOrder.whichTypes[queryNum] = sortOrder.whichTypes[i];
+                        queryNum++;
+                    }
+                }
+            }
+            if(!attribFound)
+            {
+                //break out of all loops since sortorder was not found
+                break;       
+            }
+        }
+        if(!attribFound)
+        {
+            break;
+        }
+    }
+    //Reverse the order of SortOrder
+    for(int i=0;i<queryNum;i++)
+    {
+        int whichAttr = queryOrder.whichAtts[i];
+        Type whichType = queryOrder.whichTypes[i];
+        queryOrder.whichAtts[i] = queryOrder.whichAtts[queryNum-i];
+        queryOrder.whichTypes[i] = queryOrder.whichTypes[queryNum-i];
+        queryOrder.whichAtts[queryNum-i] = whichAttr;
+        queryOrder.whichTypes[queryNum-i] = whichType;
+    }
+    return queryNum;
+}
